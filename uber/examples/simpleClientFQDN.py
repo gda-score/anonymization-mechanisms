@@ -12,8 +12,9 @@ import functools
 #from examples import config as cfg
 import config as cfg
 import urllib3
-urllib3.disable_warnings()
+#urllib3.disable_warnings()
 
+pp = pprint.PrettyPrinter(indent=4)
 
 url = cfg.url # Get URL of server from config file
 
@@ -65,7 +66,8 @@ for k in range(0, len(querylist)):
                 }
 
             # Client stores the response sent by the simpleServer.py
-            response = requests.get(url, json=request, headers=headers, timeout=100, verify=False)
+            pp.pprint(request)
+            response = requests.get(url, json=request, headers=headers, timeout=10, verify=True)
 
             resp = response.json()  # Convert response sent by server to JSON
             if 'Error' in resp['Server Response']:
