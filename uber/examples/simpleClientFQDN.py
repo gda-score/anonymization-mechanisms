@@ -9,14 +9,10 @@ along with the HTTP response code.
 import requests
 import pprint
 import functools
-#from examples import config as cfg
 import config as cfg
-import urllib3
-#urllib3.disable_warnings()
 
-pp = pprint.PrettyPrinter(indent=4)
 
-url = cfg.url # Get URL of server from config file
+url = cfg.url  # Get URL of server from config file
 
 headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}  # Headers to be sent in the client request
 
@@ -26,7 +22,7 @@ querylist = cfg.querylist  # Get querylist from config file
 
 # Client establishes a session
 session = requests.Session()
-session.get_orig, session.get = session.get, functools.partial(session.get, timeout=100)
+session.get_orig, session.get = session.get, functools.partial(session.get, timeout=100)  # Set timeout factor here
 
 # For loop to send queries from querylist
 for k in range(0, len(querylist)):
@@ -66,8 +62,7 @@ for k in range(0, len(querylist)):
                 }
 
             # Client stores the response sent by the simpleServer.py
-            pp.pprint(request)
-            response = requests.get(url, json=request, headers=headers, timeout=10, verify=True)
+            response = requests.get(url, json=request, headers=headers, timeout=100)
 
             resp = response.json()  # Convert response sent by server to JSON
             if 'Error' in resp['Server Response']:
