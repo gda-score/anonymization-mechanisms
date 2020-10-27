@@ -151,12 +151,12 @@ class GetParams(Resource):
         result = result[0]
 
         # If an error/exception is contained in the Uber Tool results raise an error
-        if 'error' in result[0].lower() or 'exception' in result[0].lower():
-            raise ValueError(f"Session {sid}: Error/Exception in Uber Tool result: {result[0]}")
+        if 'error' in result.lower() or 'exception' in result.lower():
+            raise ValueError(f"Session {sid}: Error/Exception in Uber Tool result: {result}")
 
         result_json = {
             "Server Response": {
-                "Result": result[0],
+                "Result": result,
                 "Session ID": sid
             }
         }
