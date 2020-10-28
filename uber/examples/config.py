@@ -17,12 +17,11 @@ Following valid queries return the noisy result in 'Result' field.
 Any invalid query will return an `Error` message.
 """
 
-querylist = [{"query": "", 'count': 1},
-             # FAIL {"query": "Select count(distinct uid) from transactions", "count": 1, "epsilon": "0.5"},
-             # FAIL {"query": "Select sum(acct_district_id) from accounts", "count": 1, "epsilon": "0.5"},
-             # FAIL {"query": "Select operation, count(*) from transactions group by 1", "count": 1, "epsilon": "0.5"},
-             {"query": "Select count(*) from transactions where operation LIKE '%KLAD' ", "count": 1, "epsilon": "0.5"},
-             {"query": "Select count(*) from transactions where operation = 'VKLAD' ", "count": 1, "epsilon": "0.5"},
-            {"query": "Select count(*) from accounts", "count": 1, "epsilon": "2.0"}
+querylist = [
+    # FAIL {"query": "Select count(distinct uid) from transactions", "count": 1, "epsilon": "0.5"},
+    # FAIL {"query": "Select sum(acct_district_id) from accounts", "count": 1, "epsilon": "0.5"},
+    # FAIL {"query": "Select operation, count(*) from transactions group by 1", "count": 1, "epsilon": "0.5"},
+    {"query": "Select count(*) from transactions where operation LIKE '%KLAD' ", "count": 1, "epsilon": "0.5"},
+    {"query": "Select count(*) from transactions where operation = 'VKLAD' ", "count": 1, "epsilon": "0.5"},
+    {"query": "Select count(*) from accounts", "count": 1, "epsilon": "2.0"},
 ]
-
