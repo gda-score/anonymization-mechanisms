@@ -105,12 +105,28 @@ class GetParams(Resource):
         return client_json
 
     @staticmethod
-    def create_new(query, initial_budget, epsilon, dbname):
-        used_budget = 0.0  # Initialize used_budget to 0.0
-        sid = randint(0, 1000000000)  # Generate Session ID for new session
-        print(f"Session {sid}: New session started")
-        # Create new client request with used_budget
-        create_client = {
+    def handle_query(sid, query, initial_budget, epsilon, dbname):
+        if sid is None or not sid:
+            sid = randint(0, 1000000000)  # Generate Session ID for new session
+            used_budget = float(epsilon)  # Initialize used_budget to 0.0
+            print(f"Session {sid}: New session started")
+        else:
+            inpath = request_path.joinpath(f"data{sid}.json")
+            with open(inpath, "r") as infile:
+                data = json.load(infile)
+
+            if data is None:
+                raise FileNotFoundError(f"Session {sid}: Did not find existing request file: {inpath.absolute()}")
+
+            # Extract the previous value of used_budget and update the value by adding Epsilon value to it
+            used_budget = float(data["used_budget"]) + float(epsilon)
+
+            # Extract the original budget and restrict the Client from changing the budget
+            initial_budget = data['budget']
+            dbname = data['dbname']
+
+        # Create client request
+        client_request = {
             'query': query,
             'budget': initial_budget,
             'epsilon': epsilon,
@@ -118,56 +134,18 @@ class GetParams(Resource):
             'used_budget': used_budget,
             'dbname': dbname
         }
-        set_file_count()  # Must count before writing the request file
-        write_file(create_client, sid)  # Write updated client request to a file
-        _ = wait_file(sid=sid)
-        print(f"Session {sid}: Ignoring dummy result; this just setup the new session.")
-        result_json = {
-            "Server Response": {
-                "Session ID": sid
-            }
-        }
-        return result_json
 
-    @staticmethod
-    def handle_existing(sid, query, epsilon):
-        if sid is None or not sid:
-            raise ValueError(f"Session ID cannot be empty or None. It is necessary for reading a request file.")
-        inpath = request_path.joinpath(f"data{sid}.json")
-        with open(inpath, "r") as infile:
-            data = json.load(infile)
-
-        if data is None:
-            raise FileNotFoundError(f"Session {sid}: Did not find existing request file: {inpath.absolute()}")
-
-        # Extract the previous value of used_budget and
-        # update the value by adding Epsilon value to it
-        tmp_used_budget = data["used_budget"]
-        data["used_budget"] = float(tmp_used_budget) + float(epsilon)
-        updated_used_budget = data["used_budget"]
-
-        # Extract the original budget and restrict the Client from changing the budget
-        file_budget = data['budget']
-        file_dbname = data['dbname']
-
-        # Update the Client request with used_budget
-        update_client = {
-            'query': query,
-            'budget': file_budget,
-            'epsilon': epsilon,
-            'sid': sid,
-            'used_budget': updated_used_budget,
-            'dbname': file_dbname
-        }
-
-        # If used_budget exceeds the threshold file_budget raise an error
-        if float(file_budget) < float(updated_used_budget):
-            raise ValueError(f"Session {sid}: Budget Exceeded - Cannot process queries")
+        # If used_budget exceeds the threshold initial_budget raise an error
+        if float(initial_budget) < used_budget:
+            raise ValueError(f"Session {sid}: Budget Exceeded - Cannot process query")
 
         set_file_count()  # Must count before writing updates
-        write_file(update_client, sid)
+        write_file(client_request, sid)
         result = wait_file(sid=sid)
         result = result[0]
+
+        if (epsilon is None or not epsilon or float(epsilon) == 0.0) and not query:
+            result = ''
 
         # If an error/exception is contained in the Uber Tool results raise an error
         if 'error' in result.lower() or 'exception' in result.lower():
@@ -186,10 +164,10 @@ class GetParams(Resource):
         client_json = self.request_json()  # Stores the request in JSON format
 
         # Extract the values from the JSON payload sent by Client
+        sid = client_json['sid']  # Session ID
         query = client_json['query']  # Query
         initial_budget = client_json['budget']  # Initial budget value
         epsilon = client_json['epsilon']  # Epsilon value
-        sid = client_json['sid']  # Session ID
         dbname = client_json['dbname']  # Database name
 
         print(f"Session {sid if sid is not None and sid else 'undefined'}: Client provided epsilon: {epsilon}")
@@ -204,13 +182,8 @@ class GetParams(Resource):
             print(f"Session {sid if sid is not None and sid else 'undefined'}: "
                   f"Ignoring result of previously connected client.")
 
-        # If Session ID (sid) is not present in payload i.e., it is a new session then
-        # start a new session and assign a randomly generated Session ID
-        if not sid:
-            return self.create_new(query, initial_budget, epsilon, dbname)
-
         # Otherwise, handle the request in the existing session
-        return self.handle_existing(sid, query, epsilon)
+        return self.handle_query(sid, query, initial_budget, epsilon, dbname)
 
     def get(self):
         try:
