@@ -32,34 +32,19 @@ for k in range(0, len(querylist)):
 
         # Exception handling in case exception occurs while connecting to server
         try:
-            if not sid:
-
-                # ONLY change 'epsilon', 'budget' and 'dbname' values
-                # Keep 'query' and 'sid' fields as-is
-                # If any other non-existent 'sid' value is sent, Server returns an 'Error'
-                # The budget is set in the initial request only
-                # Once the budget is set, no further modification to the budget is possible in subsequent requests
-                # Client sends this data in url
-                request = {
-                    'query': querylist[k]['query'],
-                    'epsilon': '0.0',
-                    'budget': cfg.budget,
-                    'dbname': cfg.dbname,
-                    'sid': ''  # When sid is Null it indicates start of a session
-                }
-
-                # If sid is not Null then put the sid returned by the server in the subsequent request
-                # Also extract the query from the `querylist` and put it in the `query` field
-                # ONLY `epsilon` can be changed
-                # `budget` and `dbname` just have placeholders
-            else:
-                request = {
-                    'query': querylist[k]['query'],
-                    'epsilon': querylist[k]['epsilon'],
-                    'budget': '1.0',
-                    'dbname': 'raw_banking',
-                    'sid': sid
-                }
+            # In the first query of a session, keep the sid empty. The server will assign and return a new sid with the
+            # result.
+            # In the first query of a session, provide budget and dbname. The server will ignore changes to these in
+            # successive queries with the same sid.
+            # In the first query of a session, if the query is empty and epsilon is 0.0, the server will assign and
+            # return a new sid, as usual. The returned result will be empty.
+            request = {
+                'query': querylist[k]['query'],
+                'epsilon': querylist[k]['epsilon'],
+                'budget': cfg.budget,
+                'dbname': cfg.dbname,
+                'sid': sid if sid is not None else ''  # When sid is Null it indicates start of a session
+            }
 
             # Client stores the response sent by the simpleServer.py
             response = requests.get(url, json=request, headers=headers, timeout=100)
