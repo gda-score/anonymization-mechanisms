@@ -22,11 +22,11 @@ api = Api(app)
 
 file_count = -1
 
+# The path where simpleServer.py creates files containing JSON request data
+request_path = pathlib.Path.cwd().parent.joinpath(pathlib.Path("files", "jsonreq"))
+
 # The path where Uber Tool creates the result.txt files
 uber_path = pathlib.Path.cwd().parent.joinpath(pathlib.Path("files", "noisyres"))
-
-# The path to where simpleServer.py writes files containing JSON data
-request_path = pathlib.Path.cwd().parent.joinpath(pathlib.Path("files", "jsonreq"))
 
 
 def set_file_count():

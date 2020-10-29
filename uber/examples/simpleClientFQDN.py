@@ -39,11 +39,11 @@ for k in range(0, len(querylist)):
             # In the first query of a session, if the query is empty and epsilon is 0.0, the server will assign and
             # return a new sid, as usual. The returned result will be empty.
             request = {
+                'sid': sid if sid is not None else '',  # When sid is Null it indicates start of a session
+                'dbname': cfg.dbname,
+                'budget': cfg.budget,
                 'query': querylist[k]['query'],
                 'epsilon': querylist[k]['epsilon'],
-                'budget': cfg.budget,
-                'dbname': cfg.dbname,
-                'sid': sid if sid is not None else ''  # When sid is Null it indicates start of a session
             }
 
             # Client stores the response sent by the simpleServer.py
