@@ -24,11 +24,13 @@ request = {
 ```
 
 The session ID `'sid'` maps the query to a specific session. Requests with empty or missing session ID are assigned to a
-newly created session by the server. Requests with an unknown session ID will result in an error.
+newly created session by the server. The session ID gets returned with every result, unless an error occurred and no
+session ID was defined yet. In that case, the returned session ID will read 'undefined'. Requests with an unknown
+session ID result in an error.
 
 The database name `'dbname'` indicates, which database the query should run on. This field is only read by the server
 when a new session gets created for a request. The database name gets assigned to the session. For subsequent requests
-with the same session ID, the server ignores the field of the request and uses the sessions initially configured
+with the same session ID, the server ignores the field of the request and uses the session's initially configured
 database name instead.
 
 The session privacy budget `'budget'` represents the maximum privacy budget available to a session. This
