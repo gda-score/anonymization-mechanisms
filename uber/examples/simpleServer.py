@@ -154,6 +154,7 @@ class GetParams(Resource):
         print(f"Session {sid}: Returning result={{{result}}}")
         result_json = {
             "Server Response": {
+                "Remaining Budget": float(initial_budget) - used_budget,
                 "Result": result,
                 "Session ID": sid
             }

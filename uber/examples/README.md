@@ -49,6 +49,18 @@ query's epsilon privacy budget is added. If the maximum is not enough a "budget 
 the query's result is anonymized according to the epsilon value and epsilon is added to the session's cumulative privacy
 budget use.
 
+The server's response either contains only an `'Error'` inside the `'Server Response'` or looks as follows.
+
+```python
+response = {
+    "Server Response": {
+        "Remaining Budget": remaining_budget,
+        "Result": result,
+        "Session ID": sid,
+    }
+}
+```
+
 ## Server configuration
 The FLASK server requires to now the paths of two folders:
 
