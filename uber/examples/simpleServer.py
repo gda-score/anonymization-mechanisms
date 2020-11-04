@@ -137,7 +137,9 @@ class GetParams(Resource):
 
         # If used_budget exceeds the threshold initial_budget raise an error
         if float(initial_budget) < used_budget:
-            raise ValueError(f"Session {sid}: Budget Exceeded - Cannot process query")
+            remaining = float(initial_budget) - float(data["used_budget"])
+            raise ValueError(f"Session {sid}: Budget Exceeded - Cannot process query. Remaining budget is {remaining}, "
+                             f"query requires {float(epsilon)}.")
 
         set_file_count()  # Must count before writing updates
         write_file(client_request, sid)
