@@ -45,7 +45,7 @@ anonymized and returned to the client.
 
 The privacy budget `'epsilon'` represents the privacy budget to be used by the query. The query can only be executed if
 the corresponding session's cumulative privacy budget use does not exceed the session's maximum privacy budget once the
-query's epsilon privacy budget is added. If the maximum is not enough a "budget exceeded" error is returned. Otherwise,
+query's epsilon privacy budget is added. If the maximum is not enough, a "budget exceeded" error is returned. Otherwise,
 the query's result is anonymized according to the epsilon value and epsilon is added to the session's cumulative privacy
 budget use.
 
