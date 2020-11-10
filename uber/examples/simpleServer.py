@@ -76,7 +76,7 @@ def write_file(response, sid):
     outpath = request_path.joinpath(f"data{sid}.json")
     with open(outpath, 'w') as outfile:
         json.dump(response, outfile)
-    print(f"Session {sid}: JSON Request written to: {outpath.absolute()}")
+    print(f"Session {sid}: JSON Request written to {outpath.absolute()} is {response}")
 
 
 """ Server method to handle incoming data.
@@ -185,7 +185,7 @@ class GetParams(Resource):
             print(f"Session {sid if sid is not None and sid else 'undefined'}: "
                   f"Ignoring result of previously connected client.")
 
-        # Otherwise, handle the request in the existing session
+        # Otherwise, handle the request
         return self.handle_query(sid, query, initial_budget, epsilon, dbname)
 
     def get(self):
