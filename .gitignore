@@ -105,3 +105,6 @@ venv.bak/
 
 # OSX hidden system files
 .DS_Store
+
+# intelliJ IDEA workspace meta
+.idea
