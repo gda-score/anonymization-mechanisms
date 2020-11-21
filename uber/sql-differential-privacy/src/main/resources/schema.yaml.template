@@ -1,7 +1,7 @@
 ---
 databases:
 - database: "my_database"
-  dialect: "postgres"
+  dialect: "postgresql"
   namespace: "public"
   tables:
   - table: "my_table"

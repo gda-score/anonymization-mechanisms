@@ -16,7 +16,7 @@ class BudgetDb(dbFilePath: String) {
   }
   val remainingBudget = TableQuery[RemainingBudget]
 
-  database.run(remainingBudget.schema.createIfNotExists)
+  Await.result(database.run(remainingBudget.schema.createIfNotExists), 5 seconds)
 
   def initBudget(sessionID: Int, dbName: String, initialBudget: Double): Unit = this.synchronized {
     if (Await.result(database.run(remainingBudget.filter(_.sessionID === sessionID).exists.result), 5 seconds)) {
@@ -51,5 +51,14 @@ class BudgetDb(dbFilePath: String) {
 
   def obtainInfo(sessionID: Int): (String, Double) = {
     useBudget(sessionID, 0.0)
+  }
+
+  def destroyBudget(sessionID: Int): (String, Double) = this.synchronized {
+    if (!Await.result(database.run(remainingBudget.filter(_.sessionID === sessionID).exists.result), 5 seconds)) {
+      throw new IllegalArgumentException(s"Session $sessionID: Cannot delete budget. Session ID does not exist.")
+    }
+    val res = obtainInfo(sessionID)
+    Await.result(database.run(remainingBudget.filter(_.sessionID === sessionID).delete), 5 seconds)
+    res
   }
 }
