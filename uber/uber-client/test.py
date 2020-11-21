@@ -13,11 +13,17 @@ querylist = [
 ]
 
 client = Client(base_url)
-session = client.create_session(db_name, initial_budget)
+session = client.create_session()
 
-for query_dct in querylist:
-    session.query(query_dct['query'], query_dct['epsilon'])
-
-session.info()
-
-session.destroy()
+try:
+    session.init(db_name, initial_budget)
+    for query_dct in querylist:
+        session.query(query_dct['query'], query_dct['epsilon'])
+    session.info()
+except RuntimeError as re:
+    print(f"There was a RuntimeError: {re}")
+finally:
+    try:
+        session.destroy()
+    except RuntimeError as re:
+        print(f"There was a RuntimeError: {re}")
