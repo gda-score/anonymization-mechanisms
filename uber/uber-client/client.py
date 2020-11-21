@@ -22,5 +22,5 @@ class Client:
                                f"Stack Trace: {json['Stack Trace']}")
         return json
 
-    def create_session(self, db_name, initial_budget):
-        return Session(db_name, initial_budget, self)
+    def create_session(self):
+        return Session(self)

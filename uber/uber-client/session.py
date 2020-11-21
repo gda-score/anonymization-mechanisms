@@ -1,18 +1,24 @@
 class Session:
-    def __init__(self, db_name, initial_budget, client):
+    def __init__(self, client):
+        self.id_ = None
+        self.client = client
+
+    def _check_exists(self):
+        if self.id_ is None:
+            raise RuntimeError(f"This session is either not initialized yet or destroyed already and cannot be used.")
+
+    def init(self, db_name, initial_budget):
+        if self.id_ is not None:
+            raise RuntimeError(f"This session is already initialized and cannot be initialized again.")
         value_dct = {
             'dbname': db_name,
             'budget': initial_budget,
         }
-        response = client.post_json("/session/init", value_dct)
+        response = self.client.post_json("/session/init", value_dct)
         self.id_ = int(response["Session ID"])
-        self.client = client
-        print(f"Session {self.id_}: CREATE\n"
-              f"   Session created for database {db_name} with initial budget {initial_budget}")
-
-    def _check_exists(self):
-        if self.id_ is None:
-            raise RuntimeError(f"This session was destroyed and can no longer be used.")
+        print(f"Session {self.id_}: INIT\n"
+              f"   Session initialized for database {db_name} with initial budget {initial_budget}")
+        return response
 
     def info(self):
         self._check_exists()
