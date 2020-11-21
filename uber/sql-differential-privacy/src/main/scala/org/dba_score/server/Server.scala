@@ -11,13 +11,15 @@ object Server extends cask.MainRoutes {
 
   System.setProperty("schema.config.path", "src/test/resources/gda-score-schema.yaml")
 
-  val budgetDb = new BudgetDb("/home/gda-score/uber/budgetDb.sqlite")
+//  val budgetDb = new BudgetDb("/home/gda-score/uber/budgetDb.sqlite")
+  val budgetDb = new BudgetDb("/tmp/budgetDb.sqlite")
   var dbaScoreDbMap = new mutable.HashMap[String, DbaScoreDb]()
 
   def obtainDbaScoreDb(dbName: String): DbaScoreDb = this.synchronized {
     if (!dbaScoreDbMap.contains(dbName)) {
       dbaScoreDbMap.put(dbName, new DbaScoreDb(s"//db001.gda-score.org:5432/$dbName?ssl=true&" +
-        s"sslfactory=org.postgresql.ssl.NonValidatingFactory&user=***REMOVED***&password=***REMOVED***"))
+        s"sslfactory=org.postgresql.ssl.NonValidatingFactory&user=***REMOVED***&password=***REMOVED***&" +
+        s"sslmode=require"))
     }
     dbaScoreDbMap.getOrElse(dbName, null)
   }
@@ -91,11 +93,24 @@ object Server extends cask.MainRoutes {
     tryAndCatch(sid, queryFunc)
   }
 
+  @cask.postJson("/uber/session/destroy")
+  def sessionDestroy(sid: Int): Obj = {
+    println(s"Client sent JSON to sessionDestroy: sid=$sid")
+    def destroyFunc(): Obj = {
+      val existing = budgetDb.destroyBudget(sid)
+      val dbName = existing._1
+      val remainingBudget = existing._2
+      infoJson(sid, dbName, remainingBudget)
+    }
+    tryAndCatch(sid, destroyFunc)
+  }
+
   @cask.get("/")
   def hello() = {
     "DBA Score Server is up and running.\n" +
-      "Use /uber/session/init, /uber/session/info, and /uber/session/query to query the DBA Score data protected " +
-      "by the differentially private tool from Uber. These are JSON endpoints and expect a JSON POST request.\n" +
+      "Use /uber/session/init, /uber/session/info, /uber/session/query, and /uber/session/destroy to query the " +
+      "DBA Score data protected by the differentially private tool from Uber. These are JSON endpoints and expect a " +
+      "JSON POST request.\n" +
       "More information at https://github.com/gda-score/anonymization-mechanisms"
   }
 

@@ -1,7 +1,7 @@
 ---
 databases:
   - database: "raw_banking"
-    dialect: "postgres"
+    dialect: "postgresql"
     namespace: "public"
     tables:
       - table: "accounts"
@@ -141,7 +141,7 @@ databases:
           - name: "street"
           - name: "zip"
   - database: "raw_census"
-    dialect: "postgres"
+    dialect: "postgresql"
     namespace: "public"
     tables:
       - table: "persons"
@@ -280,7 +280,7 @@ databases:
           - name: "min"
           - name: "column_label"
   - database: "raw_scihub"
-    dialect: "postgres"
+    dialect: "postgresql"
     namespace: "public"
     tables:
       - table: "downloads"
@@ -311,7 +311,7 @@ databases:
           - name: "long"
           - name: "lastname"
   - database: "raw_taxi"
-    dialect: "postgres"
+    dialect: "postgresql"
     namespace: "public"
     tables:
       - table: "rides"
