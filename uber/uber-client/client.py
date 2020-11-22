@@ -15,10 +15,10 @@ class Client:
                                f"Response Code: {response.status_code}\n"
                                f"Message: {response.content}")
         json = response.json()
-        if "Exception" in json:
+        if "Error" in json:
             raise RuntimeError(f"Server encountered an Exception\n"
                                f"Session ID: {json['Session ID']}\n"
-                               f"Exception: {json['Exception']}\n"
+                               f"Error: {json['Error']}\n"
                                f"Stack Trace: {json['Stack Trace']}")
         return json
 
