@@ -38,7 +38,7 @@ class BudgetDb(dbFilePath: String) {
     val existingDbName = existing._1
     var existingRemainingBudget = existing._2
     if (existingRemainingBudget < epsilon) {
-      throw new IllegalArgumentException(s"Session $sessionID: Not enough budget remaining. " +
+      throw new IllegalArgumentException(s"Session $sessionID: Budget Exceeded. Not enough budget remaining. " +
         s"(remaining=$existingRemainingBudget) < (requested=$epsilon).")
     }
     existingRemainingBudget -= epsilon

@@ -9,18 +9,18 @@ object Uber {
 
   def rewriteQuery(dbName: String, query: String, epsilon: Double): String = {
     val database = Schema.getDatabase(dbName)
+    println(s"Epsilon: $epsilon")
     println("Original query:")
     printQuery(query)
-    println(s"> Epsilon: $epsilon")
 
     // Rewrite the original query to enforce differential privacy using Elastic Sensitivity.
-    println("\nRewritten query:")
     val config = new ElasticSensitivityConfig(epsilon, DELTA, database)
     val rewrittenQuery = new ElasticSensitivityRewriter(config).run(query)
     val sql = rewrittenQuery.toSql()
+    println("Rewritten query:")
     printQuery(sql)
     sql
   }
 
-  def printQuery(query: String): Unit = println(s"\n  " + query.replaceAll("\\n", s"\n  ") + "\n")
+  def printQuery(query: String): Unit = println(query.replaceAll("\\n", s"\n"))
 }
