@@ -2,7 +2,7 @@
 
 budget = "6.0"  # Budget value
 dbname = "raw_banking"  # Database name
-url = "https://db001.gda-score.org/ubertool"  # Flask server url
+url = "https://db001.gda-score.org/uber/compat"  # Flask server url
 
 """
 Send the first query as `NULL` with `"count": 1`.
