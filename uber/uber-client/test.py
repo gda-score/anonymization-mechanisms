@@ -10,6 +10,8 @@ querylist = [
     {"query": "Select count(*) from transactions where operation LIKE '%KLAD' ", "epsilon": 0.5},
     {"query": "Select count(*) from transactions where operation = 'VKLAD' ", "epsilon": 0.5},
     {"query": "Select count(*) from accounts", "epsilon": 2.0},
+    {"query": "Select count(*) from accounts", "epsilon": 4.0},
+    {"query": "Select count(*) from accounts", "epsilon": 4.0},
 ]
 
 client = Client(base_url)
