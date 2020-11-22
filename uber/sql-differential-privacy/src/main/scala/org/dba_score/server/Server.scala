@@ -9,10 +9,9 @@ object Server extends cask.MainRoutes {
   override def port: Int = 5005
   override def debugMode: Boolean = true
 
-  System.setProperty("schema.config.path", "src/test/resources/gda-score-schema.yaml")
+  System.setProperty("schema.config.path", "/home/uber-dba-score-server/run_dir/gda-score-schema.yaml")
 
-//  val budgetDb = new BudgetDb("/home/gda-score/uber/budgetDb.sqlite")
-  val budgetDb = new BudgetDb("/tmp/budgetDb.sqlite")
+  val budgetDb = new BudgetDb("/home/uber-dba-score-server/run_dir/budgetDb.sqlite")
   var dbaScoreDbMap = new mutable.HashMap[String, DbaScoreDb]()
 
   def obtainDbaScoreDb(dbName: String): DbaScoreDb = this.synchronized {
@@ -44,7 +43,7 @@ object Server extends cask.MainRoutes {
     json
   }
 
-  def queryJson(sid: Int, query: String, epsilon: Double) = {
+  def queryJson(sid: Int, query: String, epsilon: Double): Obj = {
     val existing = budgetDb.useBudget(sid, epsilon)
     val dbName = existing._1
     val remainingBudget = existing._2
@@ -121,7 +120,7 @@ object Server extends cask.MainRoutes {
   def compat(request: cask.Request): Obj = {
     def compatFunc(): Obj = {
       val requestString = scala.io.Source.fromInputStream(request.data).mkString
-      println(s"Client sent RAW request data to compat: request=${requestString}")
+      println(s"Client sent RAW request data to compat: request=$requestString")
       val json = ujson.read(requestString)
       val sid = json("sid").str
       val dbname = json("dbname").str
@@ -156,7 +155,7 @@ object Server extends cask.MainRoutes {
   }
 
   @cask.get("/")
-  def hello() = {
+  def hello(): String = {
     "DBA Score Server is up and running.\n" +
       "Use /uber/session/init, /uber/session/info, /uber/session/query, and /uber/session/destroy to query the " +
       "DBA Score data protected by the differentially private tool from Uber. These are JSON endpoints and expect a " +
