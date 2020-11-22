@@ -150,7 +150,7 @@ As with the old implementation, not all input fields are always used, however, a
 When `sid` is an empty string, the server will initialize a session and assign a new ID. Only in that case fields
 `dbname` and `budget` are considered. Otherwise, these fields are ignored. When `epsilon` parses into a Double greater
 than zero, the query is executed and the budget of the session is reduced accordingly. The JSON answers of this function
-are comparable to the regular answers of the on-compatibility functions. Nevertheless, for compatibility reasons the
+are comparable to the regular answers of the non-compatibility functions. Nevertheless, for compatibility reasons the
 returned fields are nested one level below a general `Server Response` field.
 
 ###### Example:
