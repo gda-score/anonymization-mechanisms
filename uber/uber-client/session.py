@@ -42,6 +42,7 @@ class Session:
         print(f"Session {self.id_}: QUERY\n"
               f"   The following query was sent to the server:\n"
               f"{query}\n"
+              f"   The epsilon to be used for the query was specified with: {epsilon}\n"
               f"   The server rewrote the query into:\n"
               f"{response['Private SQL']}\n"
               f"   The server returned result {response['Result']}.\n"
