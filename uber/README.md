@@ -2,18 +2,18 @@
 Client and server implementation to make use of the differential privacy library from Uber.
 
 ## Client
-The client is implemented in Python 3.8 in the [uber-client](uber/uber-client) folder. The files should be self
-explanatory. Please see [test.py](uber/uber-client/test.py) for a full working example.
+The client is implemented in Python 3.8 in the [uber-client](uber-client) folder. The files should be self
+explanatory. Please see [test.py](uber-client/test.py) for a full working example.
 
 ## Server
-The server is implemented in Scala in the [sql-differential-privacy](uber/sql-differential-privacy) folder. The folder
+The server is implemented in Scala in the [sql-differential-privacy](sql-differential-privacy) folder. The folder
 is a copy of [Uber's archived repository](https://github.com/uber-archive/sql-differential-privacy) at the time of this
 writing. There are no changes to Uber's library. The server is an additional tool simply calling the library functions.
 
 The server provides a web API to receive and answer queries in JSON format. It internally manages a SQLite database to
 keep track of privacy budgets. It takes a SQL query, uses the Uber library to rewrite the query into a differentially
 private SQL query, connects to the DBA-Score PostgreSQL database to run the query, and finally returns the private
-result to the client. It currently runs on *db001.dba-score.org* and takes the following requests.
+result to the client. It currently runs on *https://db001.dba-score.org* and takes the following requests.
 
 #### Session Init
 Listens at */uber/session/init* and expects an HTTPS POST request with a JSON payload containing fields `dbname` of type
