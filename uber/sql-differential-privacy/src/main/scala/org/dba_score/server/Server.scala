@@ -1,5 +1,7 @@
 package org.dba_score.server
 
+import java.io.{PrintWriter, StringWriter}
+
 import ujson._
 
 import scala.collection.mutable
@@ -34,10 +36,12 @@ object Server extends cask.MainRoutes {
   }
 
   def errorJson(sid: Int, exception: Exception): Obj = {
+    val sw = new StringWriter
+    exception.printStackTrace(new PrintWriter(sw))
     val json = ujson.Obj(
       "Session ID" -> s"$sid",
       "Error" -> s"${exception.getLocalizedMessage}",
-      "Stack Trace" -> s"${exception.printStackTrace()}",
+      "Stack Trace" -> s"${sw.toString}",
     )
     println(s"Server returns JSON to client: $json")
     json
@@ -116,7 +120,6 @@ object Server extends cask.MainRoutes {
   }
 
   @cask.getJson("/uber/compat")
-//  def compat(sid: String, dbname: String, budget: String, query: String, epsilon: String): Obj = {
   def compat(request: cask.Request): Obj = {
     def compatFunc(): Obj = {
       val requestString = scala.io.Source.fromInputStream(request.data).mkString
