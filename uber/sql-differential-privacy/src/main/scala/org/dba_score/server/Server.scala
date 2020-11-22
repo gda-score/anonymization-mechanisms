@@ -1,6 +1,6 @@
 package org.dba_score.server
 
-import ujson.Obj
+import ujson._
 
 import scala.collection.mutable
 
@@ -25,19 +25,41 @@ object Server extends cask.MainRoutes {
   }
 
   def infoJson(sid: Int, dbName: String, remainingBudget: Double): Obj = {
-    ujson.Obj(
+    val json = ujson.Obj(
       "Session ID" -> s"$sid",
       "DB Name" -> s"$dbName",
       "Remaining Budget" -> s"$remainingBudget",
     )
+    println(s"Server returns JSON to client: $json")
+    json
   }
 
   def errorJson(sid: Int, exception: Exception): Obj = {
-    ujson.Obj(
+    val json = ujson.Obj(
       "Session ID" -> s"$sid",
-      "Exception" -> s"${exception.getLocalizedMessage}",
+      "Error" -> s"${exception.getLocalizedMessage}",
       "Stack Trace" -> s"${exception.printStackTrace()}",
     )
+    println(s"Server returns JSON to client: $json")
+    json
+  }
+
+  def queryJson(sid: Int, query: String, epsilon: Double) = {
+    val existing = budgetDb.useBudget(sid, epsilon)
+    val dbName = existing._1
+    val remainingBudget = existing._2
+    val newSql = Uber.rewriteQuery(dbName, query, epsilon)
+    val database = obtainDbaScoreDb(dbName)
+    val result = database.runQuery(newSql)
+    println(s"Result: $result")
+    val json = ujson.Obj(
+      "Session ID" -> s"$sid",
+      "Private SQL" -> s"$newSql",
+      "Result" -> s"$result",
+      "Remaining Budget" -> s"$remainingBudget",
+    )
+    println(s"Server returns JSON to client: $json")
+    json
   }
 
   def tryAndCatch(sid: Int, func: () => Obj): Obj = {
@@ -77,18 +99,7 @@ object Server extends cask.MainRoutes {
   def sessionQuery(sid: Int, query: String, epsilon: Double): Obj = {
     println(s"Client sent JSON to sessionQuery: sid=$sid query=$query epsilon=$epsilon")
     def queryFunc(): Obj = {
-      val existing = budgetDb.useBudget(sid, epsilon)
-      val dbName = existing._1
-      val remainingBudget = existing._2
-      val newSql = Uber.rewriteQuery(dbName, query, epsilon)
-      val database = obtainDbaScoreDb(dbName)
-      val result = database.runQuery(newSql)
-      ujson.Obj(
-        "Session ID" -> s"$sid",
-        "Private SQL" -> s"$newSql",
-        "Result" -> s"$result",
-        "Remaining Budget" -> s"$remainingBudget",
-      )
+      queryJson(sid, query, epsilon)
     }
     tryAndCatch(sid, queryFunc)
   }
@@ -103,6 +114,45 @@ object Server extends cask.MainRoutes {
       infoJson(sid, dbName, remainingBudget)
     }
     tryAndCatch(sid, destroyFunc)
+  }
+
+  @cask.getJson("/uber/compat")
+//  def compat(sid: String, dbname: String, budget: String, query: String, epsilon: String): Obj = {
+  def compat(request: cask.Request): Obj = {
+    def compatFunc(): Obj = {
+      val requestString = scala.io.Source.fromInputStream(request.data).mkString
+      println(s"Client sent RAW request data to compat: request=${requestString}")
+      val json = ujson.read(requestString)
+      val sid = json("sid").str
+      val dbname = json("dbname").str
+      val budget = json("budget").str
+      val query = json("query").str
+      val epsilon = json("epsilon").str
+      println(s"compat interpreted RAW request as JSON and retrieved its inputs: sid=$sid dbname=$dbname " +
+        s"budget=$budget query=$query " +
+        s"epsilon=$epsilon")
+      var parsedSid = -1
+      var parsedBudget = -1.0
+      val parsedEpsilon = epsilon.toDouble
+      if (sid.isEmpty) {
+        parsedSid = scala.util.Random.nextInt(1000000000)
+        parsedBudget = budget.toDouble
+        budgetDb.initBudget(parsedSid, dbname, parsedBudget)
+      } else {
+        parsedSid = sid.toInt
+      }
+      if (parsedEpsilon > 0.0) {
+        queryJson(parsedSid, query, parsedEpsilon)
+      } else {
+        infoJson(parsedSid, dbname, parsedBudget)
+      }
+    }
+    val json = tryAndCatch(-2, compatFunc)
+    val compatJson = ujson.Obj(
+      "Server Response" -> json,
+    )
+    println(s"compat adapts JSON for old clients and actually returns: $compatJson")
+    compatJson
   }
 
   @cask.get("/")
