@@ -48,6 +48,7 @@ object Server extends cask.MainRoutes {
   }
 
   def queryJson(sid: Int, query: String, epsilon: Double): Obj = {
+    require(epsilon > 0.0, s"epsilon must be greater than zero, was $epsilon")
     val existing = budgetDb.useBudget(sid, epsilon)
     val dbName = existing._1
     val remainingBudget = existing._2
@@ -86,6 +87,15 @@ object Server extends cask.MainRoutes {
     tryAndCatch(sid, initFunc)
   }
 
+  @cask.postJson("/uber/session/query")
+  def sessionQuery(sid: Int, query: String, epsilon: Double): Obj = {
+    println(s"Client sent JSON to sessionQuery: sid=$sid query=$query epsilon=$epsilon")
+    def queryFunc(): Obj = {
+      queryJson(sid, query, epsilon)
+    }
+    tryAndCatch(sid, queryFunc)
+  }
+
   @cask.postJson("/uber/session/info")
   def sessionInfo(sid: Int): Obj = {
     println(s"Client sent JSON to sessionInfo: sid=$sid")
@@ -96,15 +106,6 @@ object Server extends cask.MainRoutes {
       infoJson(sid, dbName, remainingBudget)
     }
     tryAndCatch(sid, infoFunc)
-  }
-
-  @cask.postJson("/uber/session/query")
-  def sessionQuery(sid: Int, query: String, epsilon: Double): Obj = {
-    println(s"Client sent JSON to sessionQuery: sid=$sid query=$query epsilon=$epsilon")
-    def queryFunc(): Obj = {
-      queryJson(sid, query, epsilon)
-    }
-    tryAndCatch(sid, queryFunc)
   }
 
   @cask.postJson("/uber/session/destroy")
@@ -143,11 +144,7 @@ object Server extends cask.MainRoutes {
       } else {
         parsedSid = sid.toInt
       }
-      if (parsedEpsilon > 0.0) {
-        queryJson(parsedSid, query, parsedEpsilon)
-      } else {
-        infoJson(parsedSid, dbname, parsedBudget)
-      }
+      queryJson(parsedSid, query, parsedEpsilon)
     }
     val json = tryAndCatch(-2, compatFunc)
     val compatJson = ujson.Obj(

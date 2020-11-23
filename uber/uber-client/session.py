@@ -33,6 +33,8 @@ class Session:
 
     def query(self, query, epsilon):
         self._check_exists()
+        if epsilon <= 0.0:
+            raise ValueError(f"epsilon must be greater than zero, was {epsilon}")
         value_dct = {
             'sid': self.id_,
             'query': query,
