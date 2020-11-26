@@ -10,6 +10,7 @@ querylist = [
     {"query": "Select count(*) from transactions where operation LIKE '%KLAD' ", "epsilon": 0.5},
     {"query": "Select count(*) from transactions where operation = 'VKLAD' ", "epsilon": 0.5},
     {"query": "Select count(*) from accounts", "epsilon": 2.0},
+    {"query": "Select count(*) from accounts where 1/(account_id - 2864) = 0", "epsilon": 2.0},
     {"query": "Select count(*) from accounts", "epsilon": 4.0},
 ]
 
@@ -19,7 +20,8 @@ session = client.create_session()
 try:
     session.init(db_name, initial_budget)
     for query_dct in querylist:
-        session.query(query_dct['query'], query_dct['epsilon'])
+        response = session.query(query_dct['query'], query_dct['epsilon'])
+        print(response)
     session.info()
 except UberServerRequestError as re:
     print(f"ERROR: {re}\n"
