@@ -1,5 +1,6 @@
 import requests
 
+from error import UberServerRequestError, UberServerExecutionError
 from session import Session
 
 
@@ -11,15 +12,10 @@ class Client:
         url = self.base_url + path
         response = requests.post(url, json=value_dct)
         if response.status_code != 200:
-            raise RuntimeError(f"Server encountered a problem with the request.\n"
-                               f"Response Code: {response.status_code}\n"
-                               f"Message: {response.content}")
+            raise UberServerRequestError(response.status_code, response.text)
         json = response.json()
-        if "Error" in json:
-            raise RuntimeError(f"Server encountered an Exception\n"
-                               f"Session ID: {json['Session ID']}\n"
-                               f"Error: {json['Error']}\n"
-                               f"Stack Trace: {json['Stack Trace']}")
+        if 'Error' in json:
+            raise UberServerExecutionError(json)
         return json
 
     def create_session(self):
