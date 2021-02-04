@@ -1,3 +1,5 @@
+# WARNING: THIS TOOL HAS SIDE-CHANNEL VULNERABILITIES AND SHOULD NOT BE USED FOR SENSITIVE DATA
+
 # Uber Tool
 Client and server implementation to make use of the differential privacy library from Uber.
 
