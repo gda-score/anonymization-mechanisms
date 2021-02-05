@@ -5,12 +5,14 @@ databases:
     namespace: "public"
     tables:
       - table: "accounts"
+        isPublic: false
         columns:
           - name: "account_id"
           - name: "acct_district_id"
           - name: "frequency"
           - name: "acct_date"
           - name: "uid"
+            maxFreq: 10000
           - name: "dlsp_type"
           - name: "birth_number"
           - name: "cli_district_id"
@@ -23,6 +25,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "cards"
+        isPublic: false
         columns:
           - name: "card_id"
           - name: "disp_id"
@@ -41,6 +44,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "clients"
+        isPublic: false
         columns:
           - name: "uid"
           - name: "birth_number"
@@ -54,6 +58,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "disp"
+        isPublic: false
         columns:
           - name: "disp_id"
           - name: "uid"
@@ -67,6 +72,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "loans"
+        isPublic: false
         columns:
           - name: "loan_id"
           - name: "account_id"
@@ -91,6 +97,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "orders"
+        isPublic: false
         columns:
           - name: "order_id"
           - name: "account_id"
@@ -114,6 +121,8 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "transactions"
+        approxRowCount: 1000000
+        isPublic: false
         columns:
           - name: "trans_id"
           - name: "account_id"
@@ -129,6 +138,7 @@ databases:
           - name: "frequency"
           - name: "acct_date"
           - name: "uid"
+            maxFreq: 10000
           - name: "disp_type"
           - name: "birth_number"
           - name: "cli_district_id"
@@ -145,6 +155,7 @@ databases:
     namespace: "public"
     tables:
       - table: "persons"
+        isPublic: false
         columns:
           - name: "uid"
           - name: "year"
@@ -266,6 +277,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "persons_char"
+        isPublic: false
         columns:
           - name: "column_name"
           - name: "column_type"
@@ -284,6 +296,7 @@ databases:
     namespace: "public"
     tables:
       - table: "downloads"
+        isPublic: false
         columns:
           - name: "datetime"
           - name: "doc"
@@ -301,6 +314,7 @@ databases:
           - name: "street"
           - name: "zip"
       - table: "sep2015"
+        isPublic: false
         columns:
           - name: "datetime"
           - name: "doc"
@@ -315,6 +329,7 @@ databases:
     namespace: "public"
     tables:
       - table: "rides"
+        isPublic: false
         columns:
           - name: "med"
           - name: "uid"
@@ -339,6 +354,7 @@ databases:
           - name: "total_amount"
           - name: "lastname"
       - table: "rides_char"
+        isPublic: false
         columns:
           - name: "column_name"
           - name: "column_type"
