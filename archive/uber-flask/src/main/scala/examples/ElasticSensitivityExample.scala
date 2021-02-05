@@ -173,7 +173,7 @@ object ElasticSensitivityExample extends App {
 
           // enter appropriate credentials to connect to server
           // the database name is sent by the client
-          val con_str = "jdbc:postgresql://db001.gda-score.org:5432/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&user=***REMOVED***&password=***REMOVED***"
+          val con_str = "jdbc:postgresql://db001.gda-score.org:5432/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&user=rohan@rhrk.uni-kl.de&password=WqResadfekaing7mk"
 
           val conn = DriverManager.getConnection(con_str)
 

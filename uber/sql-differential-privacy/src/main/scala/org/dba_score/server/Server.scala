@@ -19,7 +19,7 @@ object Server extends cask.MainRoutes {
   def obtainDbaScoreDb(dbName: String): DbaScoreDb = this.synchronized {
     if (!dbaScoreDbMap.contains(dbName)) {
       dbaScoreDbMap.put(dbName, new DbaScoreDb(s"//db001.gda-score.org:5432/$dbName?ssl=true&" +
-        s"sslfactory=org.postgresql.ssl.NonValidatingFactory&user=***REMOVED***&password=***REMOVED***&" +
+        s"sslfactory=org.postgresql.ssl.NonValidatingFactory&user=rohan@rhrk.uni-kl.de&password=WqResadfekaing7mk&" +
         s"sslmode=require"))
     }
     dbaScoreDbMap.getOrElse(dbName, null)
